@@ -1,8 +1,8 @@
 /*
  * particle_filter.cpp
  *
- *  Created on: Dec 12, 2016
- *      Author: Tiffany Huang
+ *  Created on: June 21, 2017
+ *  Author: Junsheng Fu
  */
 
 #include <random>
@@ -19,13 +19,14 @@
 
 using namespace std;
 
-static int NUM_PARTICLES = 100;
+static int NUM_PARTICLES = 50;
 
+/* Set the number of particles.
+ * Initialize all particles to first position (based on estimates of
+ * x, y, theta and their uncertainties from GPS) and all weights to 1.
+ * Add random Gaussian noise to each particle.
+ */
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
-	// TODO: Set the number of particles. Initialize all particles to first position (based on estimates of 
-	//   x, y, theta and their uncertainties from GPS) and all weights to 1. 
-	// Add random Gaussian noise to each particle.
-	// NOTE: Consult particle_filter.h for more information about this method (and others in this file).
 
   // create normal distributions for x, y, and theta
   std::normal_distribution<double> dist_x(x, std[0]);
@@ -50,11 +51,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
 }
 
+/* Add measurements to each particle and add random Gaussian noise.
+ */
 void ParticleFilter::prediction(double delta_t, double std_pos[], double velocity, double yaw_rate) {
-	// TODO: Add measurements to each particle and add random Gaussian noise.
-	// NOTE: When adding noise you may find std::normal_distribution and std::default_random_engine useful.
-	//  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
-	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
   std::default_random_engine gen;
 
@@ -84,9 +83,10 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 
 }
 
+/* Find the predicted measurement that is closest to each observed measurement and assign the
+ * observed measurement to this particular landmark, with exhausted search (may be replaced with KD-tree approaches)
+ */
 void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
-	// Find the predicted measurement that is closest to each observed measurement and assign the
-	// observed measurement to this particular landmark, with exhausted search (may be replaced with KD-tree approaches)
 
   for(auto& obs: observations){
     double minD = std::numeric_limits<float>::max();
@@ -147,9 +147,10 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // step 4: compute the particle's weight:
     // see equation this link:
     for(const auto& obs_m: observations_map){
-      LandmarkObs landmark = predictions[obs_m.id];
-      double x_term = pow(obs_m.x - landmark.x, 2) / (2 * pow(std_landmark[0], 2));
-      double y_term = pow(obs_m.y - landmark.y, 2) / (2 * pow(std_landmark[1], 2));
+
+      Map::single_landmark_s landmark = map_landmarks.landmark_list.at(obs_m.id-1);
+      double x_term = pow(obs_m.x - landmark.x_f, 2) / (2 * pow(std_landmark[0], 2));
+      double y_term = pow(obs_m.y - landmark.y_f, 2) / (2 * pow(std_landmark[1], 2));
       double w = exp(-(x_term + y_term)) / (2 * M_PI * std_landmark[0] * std_landmark[1]);
       p.weight *=  w;
     }
@@ -160,10 +161,11 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 }
 
+/* Resample particles with replacement with probability proportional to their weight.
+ * Reference 1: std::discrete_distribution, see the link below with an example
+ * http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
+ */
 void ParticleFilter::resample() {
-	// Resample particles with replacement with probability proportional to their weight.
-	// Reference 1: std::discrete_distribution, see the link below with an example
-	// http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
 
   // generate distribution according to weights
   std::random_device rd;
@@ -176,20 +178,24 @@ void ParticleFilter::resample() {
 
   // resample the particles according to weights
   for(int i=0; i<num_particles; i++){
-    resampled_particles[i] = particles[dist(gen)];
+    int idx = dist(gen);
+    resampled_particles[i] = particles[idx];
   }
 
   // assign the resampled_particles to the previous particles
   particles = resampled_particles;
+
+  // clear the weight vector for the next round
+  weights.clear();
 }
 
+/* particle: the particle to assign each listed association, and association's (x,y) world coordinates mapping to
+ * associations: The landmark id that goes along with each listed association
+ * sense_x: the associations x mapping already converted to world coordinates
+ * sense_y: the associations y mapping already converted to world coordinates
+ */
 Particle ParticleFilter::SetAssociations(Particle particle, std::vector<int> associations, std::vector<double> sense_x, std::vector<double> sense_y)
 {
-	//particle: the particle to assign each listed association, and association's (x,y) world coordinates mapping to
-	// associations: The landmark id that goes along with each listed association
-	// sense_x: the associations x mapping already converted to world coordinates
-	// sense_y: the associations y mapping already converted to world coordinates
-
 	//Clear the previous associations
 	particle.associations.clear();
 	particle.sense_x.clear();
