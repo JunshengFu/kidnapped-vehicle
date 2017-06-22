@@ -19,7 +19,7 @@
 
 using namespace std;
 
-static int NUM_PARTICLES = 50;
+static int NUM_PARTICLES = 100;
 
 /* Set the number of particles.
  * Initialize all particles to first position (based on estimates of
