@@ -48,7 +48,9 @@ will also get observation and control data.
 select the Kidnaped Vehicle, and click **start**. 
 
 
-### 3. My project files
+### 3. My project files 
+(Note: the hyperlinks **only** works if you are on the homepage of this GitHub reop,
+and you can be redirected by clicking the **View the Project on GitHub** on the top)
 
 * [CMakeLists.txt](CMakeLists.txt) is the cmake file.
 * [data](data) folder contains sensor measurements, example images, GIF. 
