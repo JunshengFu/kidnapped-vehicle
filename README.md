@@ -14,6 +14,19 @@ will also get observation and control data.
 
 [![demo_gif][demo_gif]](https://youtu.be/5q1dVAjntNw)
 
+**Demo Explanation**: 
+* Inputs:
+    * one map contains landmarks
+    * one initial location (e.g GPS) in the very beginning with big uncertainty.
+    * noisy landmark observations in each timestamp while vehicle is moving.
+
+* Outputs: 
+    * The **blue circle** (with an black arrow inside) is the real-time estimation of the vehicle's location 
+      and heading orientation from the particle filter.
+
+* Ground truth: 
+    * The **blue car** is the ground truth of the vehicle, including position and heading orientation. 
+    It is only visualized for comparison purpose.
 
 
 ## Code & Files
