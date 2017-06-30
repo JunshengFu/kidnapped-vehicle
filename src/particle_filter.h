@@ -10,22 +10,22 @@
 #include "helper_functions.h"
 
 struct Particle {
-	int id;
-	double x;
-	double y;
-	double theta;
-	double weight;
-	std::vector<int> associations;
-	std::vector<double> sense_x;
-	std::vector<double> sense_y;
+  int id;
+  double x;
+  double y;
+  double theta;
+  double weight;
+  std::vector<int> associations;
+  std::vector<double> sense_x;
+  std::vector<double> sense_y;
 };
 
 
 
 class ParticleFilter {
   // Number of particles to draw
-	int num_particles;
-	// Flag, if filter is initialized
+  int num_particles;
+  // Flag, if filter is initialized
   bool is_initialized;
 	
   // Vector of weights of all particles
@@ -105,7 +105,7 @@ public:
    * initialized Returns whether particle filter is initialized yet or not.
    */
   const bool initialized() const {
-		return is_initialized;
-	}
+    return is_initialized;
+  }
 };
 #endif /* PARTICLE_FILTER_H_ */
