@@ -1,7 +1,5 @@
 #include <uWS/uWS.h>
-#include <iostream>
 #include "json.hpp"
-#include <math.h>
 #include "particle_filter.h"
 
 using namespace std;
